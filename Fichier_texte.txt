@@ -1,0 +1,5 @@
+Test
+<balise> contenu </balise>
+Test2
+Test 3
+Saut de ligne
