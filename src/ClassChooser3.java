@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -111,9 +112,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			}
 
 			public void windowClosing(WindowEvent e) {
-				File MyFile = new File(fichierTmp);
-				System.out.println("Suppression de : " + fichierTmp);
-				MyFile.delete();
+				suppressionTmp(fichierTmp);
 			}
 
 			public void windowDeactivated(WindowEvent e) {
@@ -129,6 +128,39 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			}
 		});
 
+	}
+
+	// suppression de tous les fic tmp :
+	public void suppressionTmp(String nomFic) {
+		if (currentFileBeingEdited == null) {
+			File file2 = new File("");
+			System.out.println("Chemin selec : " + file2.getAbsolutePath());
+			walkDir(new File(file2.getAbsolutePath()),
+					Pattern.compile(".*tmp.xml"));
+		} else {
+			File file2 = new File(currentFileBeingEdited);
+			String dossierCourant = file2.getAbsolutePath().substring(0,
+					file2.getAbsolutePath().lastIndexOf('\\'));
+			File file3 = new File(file2.getAbsolutePath().substring(0,
+					file2.getAbsolutePath().lastIndexOf('\\')));
+			System.out.println(dossierCourant);
+			walkDir(new File(file3.getAbsolutePath()),
+					Pattern.compile(".*tmp.xml"));
+		}
+	}
+
+	// supprime les fichiers avec une certaine extension :
+	private static void walkDir(final File dir, final Pattern pattern) {
+		final File[] files = dir.listFiles();
+		if (files != null) {
+			for (final File file : files) {
+				if (pattern.matcher(file.getName()).matches()) {
+					System.out.println("Supprime : " + file.getAbsolutePath());
+					File MyFile = file;
+					MyFile.delete();
+				}
+			}
+		}
 	}
 
 	// Actions sur l'écran de droite qui influent sur tmp et écran de gauche :
@@ -149,7 +181,6 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			}
 
 			public void mousePressed(MouseEvent e) {
-				majTmp();
 			}
 
 			public void mouseReleased(MouseEvent e) {
@@ -189,7 +220,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			e10.printStackTrace();
 		}
 
-		// écriture dans le fichier tmp :
+		// écriture (màj) dans le fichier tmp :
 		PrintWriter pw = null;
 		try {
 			pw = new PrintWriter(new File(fichierTmp));
@@ -218,7 +249,8 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		item = new JMenuItem("Rename"); // pas encore traité
 		item.addActionListener(this);
 		fileMenu.add(item);
-		item = new JMenuItem("Delete"); // ne marche pas : buffers à fermer
+		item = new JMenuItem("Delete"); // ne marche pas : buffers à fermer... A
+										// l'air de marcher maintenant !
 		item.addActionListener(this);
 		fileMenu.add(item);
 		fileMenu.addSeparator();
@@ -251,7 +283,6 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 	// Ouverture et impression fichier dans affichage de droite
 	private class OpenListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			// ADDED ONLY THIS LINE
 			ta.setText("");
 			fc = new JFileChooser();
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
