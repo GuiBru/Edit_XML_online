@@ -142,7 +142,8 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 
 			public void mouseEntered(MouseEvent e) {
 				majTmp();
-				if (fichierTmp != null && currentFileBeingEdited != null) {
+				if (fichierTmp != null && currentFileBeingEdited != null
+						&& isWellFormed.renvoie_bool(fichierTmp) == true) {
 					AjoutArbre(fichierTmp);
 				}
 			}
@@ -159,10 +160,14 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			}
 
 			public void keyPressed(KeyEvent e) {
-				majTmp();
 			}
 
 			public void keyReleased(KeyEvent e) {
+				majTmp();
+				if (fichierTmp != null && currentFileBeingEdited != null
+						&& isWellFormed.renvoie_bool(fichierTmp) == true) {
+					AjoutArbre(fichierTmp);
+				}
 			}
 		});
 	}
