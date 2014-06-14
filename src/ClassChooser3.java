@@ -47,6 +47,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 	JScrollPane scrollPane2 = new JScrollPane();
 	JScrollPane scrollPane = new JScrollPane(ta);
 	int currentCaretPosition;
+	static String balise = "";
 
 	public ClassChooser3() {
 		scrollPane.setPreferredSize(new Dimension(750, 200));
@@ -228,23 +229,53 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		});
 	}
 
-	public void ProposeFermetureBalise() {
-		String text = ta.getText();
-		char lastCaretTyped;
-
+	public void ProposeFermetureBalise(char c) {
+		
+		char CaretTyped = '0';
+		int i = 0,finBoucle = 0;
 		int currentCaretPosition = ta.getCaretPosition();
-		lastCaretTyped = text.charAt(currentCaretPosition - 1);
-		System.out.println("Dernier char tape : " + lastCaretTyped);
-
-		if (lastCaretTyped == '>') {
-			// vérification du format " <contenu> " et ...
-
-			// Si oui, récupération de "contenu" puis ...
-
-			// ... vérification existence de </contenu> et ...
-
-			// Si non, création de </contenu>
-
+		String text = ta.getText();
+		String baliseReverse = "";
+		
+		if(c == '<')
+		{
+			balise = "";
+			while(i<text.length() && finBoucle == 0)
+			{
+				System.out.println(currentCaretPosition - i);
+				System.out.println(text.charAt(currentCaretPosition - i - 1));
+				if(text.charAt(currentCaretPosition - i - 1) == '>')
+				{
+					i++;
+					while(CaretTyped != '<' && i<text.length() && finBoucle == 0)
+					{
+						CaretTyped = text.charAt(currentCaretPosition - i - 1);
+						if(CaretTyped == '/')
+							finBoucle = 1;
+						else if(CaretTyped != '<' && CaretTyped != '>')
+							baliseReverse = baliseReverse + CaretTyped;
+						
+						if(finBoucle == 0)
+							i++;
+					}
+					System.out.println("carac");
+					System.out.println(text.charAt(currentCaretPosition - i));
+					if((i<text.length() || text.charAt(currentCaretPosition - i) == '<') && finBoucle == 0)
+					{
+						balise = new StringBuilder(baliseReverse).reverse().toString();
+						finBoucle = 1;
+					}
+				}
+				else
+					i++;
+			}
+			if(balise != "")
+			{
+				System.out.println("balise :" + balise);
+				ta.insert('/' + balise + '>', currentCaretPosition);
+				ta.select(currentCaretPosition, currentCaretPosition + balise.length() + 2);
+			}
+			
 		}
 
 		// ta.insert(String str, int pos);
