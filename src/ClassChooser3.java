@@ -27,7 +27,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.event.CaretEvent;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -76,11 +75,22 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		GestionFenetre();
 	}
 
-	public void caretUpdate(CaretEvent e) {
+	// a finir (à peine commencé)
+	public void IntendationAuto() {
+		String text = ta.getText();
+		char carEnCours = text.charAt(1);
+		int positionCar = 1;
 
-		int position = e.getDot();
-
-		System.out.println("Caret Position :" + position);
+		while (positionCar != text.length() - 1) {
+			if (carEnCours == '\n') {
+				System.out.println("saut ligne trouve !");
+				if (text.charAt(positionCar) != '\t') {
+					System.out.println("Mais pas de tabulation");
+				}
+			}
+			carEnCours = text.charAt(positionCar);
+			positionCar++;
+		}
 	}
 
 	public void AjoutArbre(String name) {
@@ -107,8 +117,9 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		}
 
 		Node root = (Node) doc.getDocumentElement();
-
 		scrollPane2.setViewportView(new XML2JTree(root, showDetails));
+
+		// IntendationAuto();
 	}
 
 	// Actions à effectuer lors de modification de la fenêtre
@@ -287,8 +298,8 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		item = new JMenuItem("Rename"); // pas encore traité
 		item.addActionListener(this);
 		fileMenu.add(item);
-		item = new JMenuItem("Delete"); // ne marche pas : buffers à fermer... A
-										// l'air de marcher maintenant !
+		item = new JMenuItem("Delete"); // ne marche pas : buffers à fermer...
+										// a l'air de marcher maintenant ?!
 		item.addActionListener(this);
 		fileMenu.add(item);
 		fileMenu.addSeparator();
@@ -474,5 +485,6 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 						"Aucun fichier ouvert actuellement.");
 			}
 		} // reste rennomage à faire : copie + création + suppression
+			// (optionnel)
 	}
 }

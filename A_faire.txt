@@ -18,6 +18,9 @@ PUIS modification de la partie droite qui suit (partie 2).
 
 -englober un morceau de texte (voir "Surligner" dans ClassChooser2)
 
--indentation des balises automatique (ajout de "tab" avant le premier < d'une ligne, etc...)
+-indentation des balises automatique :
+Pas de "tab" à la premiere ni la 2eme ligne
+"tab" pour tous les sous-groupes
+2 x "tab" pour les sous-sous-groupes etc.
 
 -BONUS : coloration (highlight, etc.)
