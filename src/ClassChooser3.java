@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.CaretEvent;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -46,6 +47,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 	private String fichierTmp = null;
 	JScrollPane scrollPane2 = new JScrollPane();
 	JScrollPane scrollPane = new JScrollPane(ta);
+	int currentCaretPosition;
 
 	public ClassChooser3() {
 		scrollPane.setPreferredSize(new Dimension(750, 200));
@@ -64,6 +66,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		menuBar.add(arbreMenu);
 
 		actionsDroite();
+
 		this.setContentPane(content);
 		this.setTitle("Editeur XML Bêta");
 		this.setVisible(true);
@@ -71,6 +74,13 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		ta.setBounds(100, 100, 612, 474);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GestionFenetre();
+	}
+
+	public void caretUpdate(CaretEvent e) {
+
+		int position = e.getDot();
+
+		System.out.println("Caret Position :" + position);
 	}
 
 	public void AjoutArbre(String name) {
@@ -199,8 +209,36 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 						&& isWellFormed.renvoie_bool(fichierTmp) == true) {
 					AjoutArbre(fichierTmp);
 				}
+				if (e.getKeyChar() != '\u0008' && e.getKeyChar() != '\u007F') {
+					// ni un return ni un suppr
+					ProposeFermetureBalise();
+				}
 			}
 		});
+	}
+
+	public void ProposeFermetureBalise() {
+		String text = ta.getText();
+		char lastCaretTyped;
+
+		int currentCaretPosition = ta.getCaretPosition();
+		lastCaretTyped = text.charAt(currentCaretPosition - 1);
+		System.out.println("Dernier char tape : " + lastCaretTyped);
+
+		if (lastCaretTyped == '>') {
+			// vérification du format " <contenu> " et ...
+
+			// Si oui, récupération de "contenu" puis ...
+
+			// ... vérification existence de </contenu> et ...
+
+			// Si non, création de </contenu>
+
+		}
+
+		// ta.insert(String str, int pos);
+		// Inserts the specified text at the specified position in this text
+		// area.
 	}
 
 	// création et màj du fichier tmp :

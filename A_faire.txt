@@ -1,0 +1,23 @@
+Toutes les mises à jour doivent être fait dans le "vrai" programme qui est ClassChooser3.
+
+Créez une copie de ClassChooser3 pour les "grosses" modifications svp.
+
+
+
+Liste tâches :
+
+-création ;
+effacement ;
+renommage ;
+copie ;
+déplacement 
+d'un noeud dans l'arbre (partie 1)
+PUIS modification de la partie droite qui suit (partie 2).
+
+-proposer les fermetures de balises (en cours dans ClassChooser3)
+
+-englober un morceau de texte (voir "Surligner" dans ClassChooser2)
+
+-indentation des balises automatique (ajout de "tab" avant le premier < d'une ligne, etc...)
+
+-BONUS : coloration (highlight, etc.)
