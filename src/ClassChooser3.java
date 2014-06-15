@@ -226,120 +226,242 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 				}
 				if (e.getKeyChar() != '\u0008' && e.getKeyChar() != '\u007F') {
 					// ni un return ni un suppr
+					IndenteTexte(e.getKeyChar());
 					ProposeFermetureBalise(e.getKeyChar());
 				}
 			}
 		});
 	}
-
-	public int ScanBaliseChange() {
-		int nombreBaliseFermante = 0, i = 0, nombreBaliseOuvrante = 0;
+	public void IndenteBalise(char c)
+	{
+		int i = 1;
+		int currentCaretPosition = ta.getCaretPosition();
+		String text = ta.getText();
+		boolean baliseFermante = false;
+		
+		if(currentCaretPosition - i - 1 <= 0)
+			return;
+		
+		while(text.charAt(currentCaretPosition - i - 1) != '	' && i + 1 < text.length())
+		{			
+			if(i + 1 < text.length())
+			{
+				if(text.charAt(currentCaretPosition - i - 1) == '>' && text.charAt(currentCaretPosition - i - 2) == '/')
+					return;
+			}
+			if(i + 2 < text.length())
+			{
+				if(text.charAt(currentCaretPosition - i - 1) == '/' && text.charAt(currentCaretPosition - i - 2) == '<')
+				{
+					if(text.charAt(currentCaretPosition - i - 3) == '	')
+						baliseFermante = true;	
+				}
+				if(text.charAt(currentCaretPosition - i - 1) == '?' && text.charAt(currentCaretPosition - i - 2) == '<')
+					return;
+			}
+			i++;
+		}
+		if(baliseFermante == true)
+			ta.replaceRange(null, text.length() - i - 1, text.length() - i );
+		
+	}
+	public void IndenteTexte(char c)
+	{
+		if(c == '\n')
+		{
+			IndenteBalise(c);
+			
+			int nombreBaliseFermante = 0, i = 0, nombreBaliseOuvrante = 0;
+			int currentCaretPosition = ta.getCaretPosition();
+			boolean baliseFermante, baliseOuvranteFermante,balise;
+			String text = ta.getText();
+			char caractereCurseur = text.charAt(currentCaretPosition - i - 1);
+			
+			while(i < text.length())
+			{
+				balise = false;
+				baliseFermante = false;
+				baliseOuvranteFermante = false;
+				if (caractereCurseur != '>')
+				{
+					while (caractereCurseur != '>' && i < text.length())
+					{
+						caractereCurseur = text	.charAt(currentCaretPosition - i - 1);
+						i++;
+					}
+				}
+				if(caractereCurseur == '>')
+					balise = true;
+				
+				if(balise == true)
+				{
+					if(i+1 < text.length())
+					{
+						i++;
+						caractereCurseur = text.charAt(currentCaretPosition - i);
+						if(caractereCurseur == '/')
+						{
+							i++;
+							baliseOuvranteFermante = true;
+						}
+					}
+					while(i<text.length() && caractereCurseur != '<' )
+					{
+						caractereCurseur = text.charAt(currentCaretPosition - i - 1);
+						if(caractereCurseur == '/' && i+1 < text.length())
+						{
+							if(text.charAt(currentCaretPosition - i - 2) == '<')
+								baliseFermante = true;
+						}
+						if(caractereCurseur == '?' && i+1 < text.length())
+						{
+							if(text.charAt(currentCaretPosition - i - 2) == '<')
+								baliseOuvranteFermante = true;
+						}
+						
+						i++;
+					}
+					if(caractereCurseur == '<')
+					{
+						if(i > 1)
+						{
+							if(text.charAt(currentCaretPosition - i + 1) == '?')
+								baliseOuvranteFermante = true;
+						}
+						if(baliseFermante == true)
+							nombreBaliseFermante++;
+						else if(baliseOuvranteFermante != true)
+							nombreBaliseOuvrante++;
+					}
+				}
+			}
+			for(i=0;i<nombreBaliseOuvrante - nombreBaliseFermante;i++)
+				ta.insert("	", ta.getCaretPosition());
+		}
+	}
+	
+	
+	
+	public int ScanBaliseChange()
+	{
+		int nombreBaliseFermante = 0,i = 0,nombreBaliseOuvrante = 0;
 		boolean baliseFermante = false, baliseOuvranteFermante = false;
 		int currentCaretPosition = ta.getCaretPosition();
 		String text = ta.getText();
 		char caractereCurseur = text.charAt(currentCaretPosition - i - 1);
-
-		while (nombreBaliseFermante >= nombreBaliseOuvrante
-				&& i < text.length()) {
+		
+		while(nombreBaliseFermante >= nombreBaliseOuvrante && i<text.length())
+		{
 			baliseFermante = false;
 			baliseOuvranteFermante = false;
-
-			if (caractereCurseur != '>') {
-				while (caractereCurseur != '>' && i < text.length()) {
-					caractereCurseur = text
-							.charAt(currentCaretPosition - i - 1);
+			
+			if(caractereCurseur != '>')
+			{
+				while(caractereCurseur != '>' && i < text.length())
+				{
+					caractereCurseur = text.charAt(currentCaretPosition - i - 1);
 					i++;
 				}
 			}
-			if (i + 1 < text.length()) {
+			if(i >= text.length() && caractereCurseur != '>')
+				return -1;
+						
+			if(i+1 < text.length())
+			{
 				i++;
 				caractereCurseur = text.charAt(currentCaretPosition - i);
-				if (caractereCurseur == '/') {
+				if(caractereCurseur == '/')
+				{
 					i++;
 					baliseOuvranteFermante = true;
 				}
 			}
-			while (i < text.length() && caractereCurseur != '<') {
+			while(i<text.length() && caractereCurseur != '<' )
+			{
 				caractereCurseur = text.charAt(currentCaretPosition - i - 1);
-				if (caractereCurseur == '/' && i + 1 < text.length()) {
-					if (text.charAt(currentCaretPosition - i - 2) == '<')
+				if(caractereCurseur == '/' && i+1 < text.length())
+				{
+					if(text.charAt(currentCaretPosition - i - 2) == '<')
 						baliseFermante = true;
 				}
-
+				
 				i++;
 			}
-			if (i > 1) {
-				System.out.println(text.charAt(currentCaretPosition - i + 1));
-				if (text.charAt(currentCaretPosition - i + 1) == '?')
+			if(i > 1)
+			{
+				if(text.charAt(currentCaretPosition - i + 1) == '?')
 					baliseOuvranteFermante = true;
 			}
-			if (baliseFermante == true)
+			if(baliseFermante == true)
 				nombreBaliseFermante++;
-			else if (baliseOuvranteFermante != true)
+			else if(baliseOuvranteFermante != true)
 				nombreBaliseOuvrante++;
 		}
-		if (nombreBaliseFermante >= nombreBaliseOuvrante)
+		if(nombreBaliseFermante >= nombreBaliseOuvrante)
 			return -1;
-
+		
 		return i;
 	}
-
-	public void ProposeFermetureBalise(char c) {
-
+	public int FermetureDirecte()
+	{
 		int i = 0;
-		boolean supprime = false;
-		Highlighter hl = ta.getHighlighter();
-		hl.removeAllHighlights();
-
-		if (c == '<' && ta.getCaretPosition() != 1) {
-			String balise = "";
-			String text = ta.getText();
-			int positionBalise = text.length() - ScanBaliseChange();
-
-			if (positionBalise >= text.length())
+		String text = ta.getText();
+		int currentCaretPosition = ta.getCaretPosition();
+		
+		while(currentCaretPosition - i > 0 && text.charAt(currentCaretPosition - i - 1) != '<' && i<text.length())
+		{
+			i++;
+			if(text.charAt(currentCaretPosition - i - 1) == '/' || text.charAt(currentCaretPosition - i - 1) == '?')
+				return -1;
+		}
+		if(currentCaretPosition - i - 1 <= 0 && text.charAt(currentCaretPosition - i - 1) != '<')
+			return -1;
+		
+		return i;
+		
+	}
+	public void ProposeFermetureBalise(char c) {
+		
+		int i = 0;
+		int positionBalise = 0;
+		String text = ta.getText();
+		String balise ="";
+		
+		if(c == '<' && ta.getCaretPosition() != 1)
+			positionBalise = text.length() - ScanBaliseChange();
+		else if(c == '>' && ta.getCaretPosition() != 1)
+			positionBalise = text.length() - FermetureDirecte();
+		
+		if(c == '>' || c == '<' &&ta.getCaretPosition() != 1 )
+		{
+			
+			if(positionBalise >= text.length())
 				return;
-
-			while (text.charAt(positionBalise + i) != '>'
-					&& text.charAt(positionBalise + i) != ' ') {
-				if (text.charAt(positionBalise + i) != '<'
-						&& text.charAt(positionBalise + i) != '>'
-						&& text.charAt(positionBalise + i) != ' ')
+			
+			while(text.charAt(positionBalise + i) != '>' && text.charAt(positionBalise + i) != ' ' && positionBalise + i < text.length())
+			{
+				if(text.charAt(positionBalise + i) != '<'&& text.charAt(positionBalise + i) != '>' && text.charAt(positionBalise + i) != ' ')
 					balise = balise + text.charAt(positionBalise + i);
-
+				
 				i++;
 			}
-			if (balise != "") {
+						
+			if(balise != "" && c == '<')
+			{
 				ta.insert('/' + balise + '>', ta.getCaretPosition());
-
-				try {
-					hl.addHighlight(
-							ta.getCaretPosition() - balise.length() - 2,
-							ta.getCaretPosition(),
-							DefaultHighlighter.DefaultPainter);
-				} catch (BadLocationException ex) {
-					ex.printStackTrace();
-				}
-
-				ta.addKeyListener(new KeyListener() {
-					public void keyTyped(KeyEvent e) {
-						if (e.getKeyChar() == '\u0008'
-								&& e.getKeyChar() == '\u007F') {
-							// supprimer
-							// supprime = true;
-						}
-					}
-
-					public void keyPressed(KeyEvent e) {
-					}
-
-					public void keyReleased(KeyEvent e) {
-					}
-				});
-				// ta.select(ta.getCaretPosition() - balise.length() -
-				// 2,ta.getCaretPosition());
-				// + supprimer...
+				ta.select(ta.getCaretPosition() - balise.length() - 2, ta.getCaretPosition() );
+			}
+			else if(balise != "" && c == '>')
+			{
+				ta.insert("</" + balise + '>', ta.getCaretPosition());
+				ta.select(ta.getCaretPosition() - balise.length() - 3, ta.getCaretPosition() );
 			}
 		}
+		
+
+		// ta.insert(String str, int pos);
+		// Inserts the specified text at the specified position in this text
+		// area.
 	}
 
 	// création et màj du fichier tmp :
