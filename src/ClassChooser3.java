@@ -229,61 +229,73 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		});
 	}
 
-	public void ProposeFermetureBalise(char c) {
-		
-		char CaretTyped = '0';
-		int i = 0,finBoucle = 0;
+	public int ScanBaliseChange()
+	{
+		int nombreBaliseFermante = 0,i = 0,nombreBaliseOuvrante = 0;
+		boolean baliseFermante = false;
 		int currentCaretPosition = ta.getCaretPosition();
 		String text = ta.getText();
-		String baliseReverse = "";
+		char caractereCurseur = text.charAt(currentCaretPosition - i - 1);
 		
-		if(c == '<')
+		
+		while(nombreBaliseFermante >= nombreBaliseOuvrante && i<text.length())
 		{
-			balise = "";
-			while(i<text.length() && finBoucle == 0)
+			baliseFermante = false;
+			if(i+1 < text.length())
 			{
-				System.out.println(currentCaretPosition - i);
-				System.out.println(text.charAt(currentCaretPosition - i - 1));
-				if(text.charAt(currentCaretPosition - i - 1) == '>')
-				{
-					i++;
-					while(CaretTyped != '<' && i<text.length() && finBoucle == 0)
-					{
-						CaretTyped = text.charAt(currentCaretPosition - i - 1);
-						if(CaretTyped == '/')
-						{
-							baliseReverse = "";
-							i = i + 2;
-							finBoucle = 1;
-						}
-						if(CaretTyped == ' ')
-							baliseReverse = "";
-						else if(CaretTyped != '<' && CaretTyped != '>')
-							baliseReverse = baliseReverse + CaretTyped;
-						
-						if(finBoucle == 0)
-							i++;
-					}
-					System.out.println("carac");
-					System.out.println(text.charAt(currentCaretPosition - i));
-					if((i<text.length() || text.charAt(currentCaretPosition - i) == '<') && finBoucle == 0)
-					{
-						balise = new StringBuilder(baliseReverse).reverse().toString();
-						finBoucle = 1;
-					}
-					else
-						finBoucle = 0;
-				}
-				else
+				i++;
+				caractereCurseur = text.charAt(currentCaretPosition - i - 1);
+				if(caractereCurseur == '/')
 					i++;
 			}
+			
+			while(i<text.length() && caractereCurseur != '<' )
+			{
+				caractereCurseur = text.charAt(currentCaretPosition - i - 1);
+				if(caractereCurseur == '/' && i+1 < text.length())
+				{
+					if(text.charAt(currentCaretPosition - i - 2) == '<')
+						baliseFermante = true;
+				}
 				
+				i++;
+			}
+			if(baliseFermante == true)
+				nombreBaliseFermante++;
+			else
+				nombreBaliseOuvrante++;
+		}
+		i++;
+		
+		return i;
+	}
+	public void ProposeFermetureBalise(char c) {
+		
+		int i = 0,finBoucle = 0;
+		
+		
+		if(c == '<' && ta.getCaretPosition() != 1)
+		{
+			String balise ="";
+			String text = ta.getText();
+			int positionBalise = text.length() - ScanBaliseChange() + 1;
+			
+			if(positionBalise < 0 || text.charAt(positionBalise) != '<')
+				return;
+			
+			while(text.charAt(positionBalise + i) != '>')
+			{
+				if(text.charAt(positionBalise + i) != '<'&& text.charAt(positionBalise + i) != '>')
+					balise = balise + text.charAt(positionBalise + i);
+				
+				i++;
+			}
 			if(balise != "")
 			{
-				System.out.println("balise :" + balise);
-				ta.insert('/' + balise + '>', currentCaretPosition);
-				ta.select(currentCaretPosition, currentCaretPosition + balise.length() + 2);
+				ta.insert('/' + balise + '>', ta.getCaretPosition());
+				ta.select(ta.getCaretPosition() - balise.length() - 2, ta.getCaretPosition() );
 			}
+			
 			
 		}
 
