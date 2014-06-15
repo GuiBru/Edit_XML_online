@@ -223,7 +223,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 				}
 				if (e.getKeyChar() != '\u0008' && e.getKeyChar() != '\u007F') {
 					// ni un return ni un suppr
-					ProposeFermetureBalise();
+					ProposeFermetureBalise(e.getKeyChar());
 				}
 			}
 		});
@@ -251,7 +251,13 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 					{
 						CaretTyped = text.charAt(currentCaretPosition - i - 1);
 						if(CaretTyped == '/')
+						{
+							baliseReverse = "";
+							i = i + 2;
 							finBoucle = 1;
+						}
+						if(CaretTyped == ' ')
+							baliseReverse = "";
 						else if(CaretTyped != '<' && CaretTyped != '>')
 							baliseReverse = baliseReverse + CaretTyped;
 						
@@ -265,10 +271,13 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 						balise = new StringBuilder(baliseReverse).reverse().toString();
 						finBoucle = 1;
 					}
+					else
+						finBoucle = 0;
 				}
 				else
 					i++;
 			}
+				
 			if(balise != "")
 			{
 				System.out.println("balise :" + balise);
