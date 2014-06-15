@@ -289,6 +289,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		int i = 0;
 		boolean supprime = false;
 		Highlighter hl = ta.getHighlighter();
+		hl.removeAllHighlights();
 
 		if (c == '<' && ta.getCaretPosition() != 1) {
 			String balise = "";
