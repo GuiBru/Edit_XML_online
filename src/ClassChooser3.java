@@ -27,6 +27,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -284,6 +287,8 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 	public void ProposeFermetureBalise(char c) {
 
 		int i = 0;
+		boolean supprime = false;
+		Highlighter hl = ta.getHighlighter();
 
 		if (c == '<' && ta.getCaretPosition() != 1) {
 			String balise = "";
@@ -304,8 +309,34 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			}
 			if (balise != "") {
 				ta.insert('/' + balise + '>', ta.getCaretPosition());
-				ta.select(ta.getCaretPosition() - balise.length() - 2,
-						ta.getCaretPosition());
+
+				try {
+					hl.addHighlight(
+							ta.getCaretPosition() - balise.length() - 2,
+							ta.getCaretPosition(),
+							DefaultHighlighter.DefaultPainter);
+				} catch (BadLocationException ex) {
+					ex.printStackTrace();
+				}
+
+				ta.addKeyListener(new KeyListener() {
+					public void keyTyped(KeyEvent e) {
+						if (e.getKeyChar() == '\u0008'
+								&& e.getKeyChar() == '\u007F') {
+							// supprimer
+							// supprime = true;
+						}
+					}
+
+					public void keyPressed(KeyEvent e) {
+					}
+
+					public void keyReleased(KeyEvent e) {
+					}
+				});
+				// ta.select(ta.getCaretPosition() - balise.length() -
+				// 2,ta.getCaretPosition());
+				// + supprimer...
 			}
 		}
 	}
@@ -349,13 +380,13 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 	public void createFileMenu() {
 		JMenuItem item;
 		fileMenu = new JMenu("File");
-		item = new JMenuItem("New"); // ok
+		item = new JMenuItem("Save to"); // ok
 		item.addActionListener(this);
 		fileMenu.add(item);
 		item = new JMenuItem("Open"); // ok
 		item.addActionListener(new OpenListener());
 		fileMenu.add(item);
-		item = new JMenuItem("Save"); // ok
+		item = new JMenuItem("Save"); // en cours
 		item.addActionListener(this);
 		fileMenu.add(item);
 		item = new JMenuItem("Rename"); // pas encore traité
@@ -366,7 +397,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		item.addActionListener(this);
 		fileMenu.add(item);
 		fileMenu.addSeparator();
-		item = new JMenuItem("Exit"); // ok
+		item = new JMenuItem("Exit"); // ok (sans suppr les fic tmp)
 		item.addActionListener(this);
 		fileMenu.add(item);
 	}
@@ -455,7 +486,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 	}
 
 	public void creerFichier() {
-		ta.setText("");
+		// ta.setText("");
 		fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		fc.setSelectedFile(fc.getCurrentDirectory());
@@ -469,13 +500,12 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		if (choix == fc.APPROVE_OPTION) {
 			String s = (String) JOptionPane.showInputDialog(null,
 					"Chemin selectionné : " + currentFileBeingEdited + "\n"
-							+ "Nom du fichier (avec extension si besoin) : ",
-					"Choix du nom de fichier", JOptionPane.PLAIN_MESSAGE, null,
-					null, "Nouveau_fichier");
-			// Ajout extension ??
+							+ "Nom du fichier: ", "Choix du nom de fichier",
+					JOptionPane.PLAIN_MESSAGE, null, null, "Nouveau_fichier");
 
 			if ((s != null) && (s.length() > 0)) {
-				currentFileBeingEdited = currentFileBeingEdited + "\\" + s;
+				currentFileBeingEdited = currentFileBeingEdited + "\\" + s
+						+ ".xml";
 				// creation du fichier :
 				try {
 					BufferedWriter writer = new BufferedWriter(new FileWriter(
@@ -485,32 +515,10 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 				} catch (IOException e10) {
 					e10.printStackTrace();
 				}
-				// ouverture du fichier cree :
-				file = new File(currentFileBeingEdited);
-				try {
-					br = new BufferedReader(new FileReader(file));
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				try {
-					line = br.readLine();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				while (line != null) {
-					ta.append(line + "\n");
-					try {
-						line = br.readLine();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
 			} else {
-				JOptionPane.showMessageDialog(null, "Fichier non créé.");
+				JOptionPane.showMessageDialog(null, "Fichier non créé !");
 			}
+			Sauvegarder(currentFileBeingEdited);
 		}
 	}
 
@@ -523,8 +531,16 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		if (menuName.equals("Exit")) { // Quitter
 			System.exit(0);
 		} else if ("Save".equalsIgnoreCase(menuName)) { // Sauvegarder
-			Sauvegarder(currentFileBeingEdited);
-		} else if ("New".equalsIgnoreCase(menuName)) { // Créer nouveau fichier
+			if (currentFileBeingEdited != null) {
+				Sauvegarder(currentFileBeingEdited);
+			} else {
+				JOptionPane
+						.showMessageDialog(
+								null,
+								"Aucun fichier n'est ouvert actuellement...\nFaire \"Sauvegarder a\" pour enregistrer le nouveau fichier.");
+			}
+		} else if ("Save to".equalsIgnoreCase(menuName)) { // Créer nouveau
+															// fichier
 			creerFichier();
 		} else if ("Delete".equalsIgnoreCase(menuName)) { // Supprimer fichier
 			if (currentFileBeingEdited != null) {
@@ -541,6 +557,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 					System.out.println("suppression de "
 							+ currentFileBeingEdited);
 					// erreur à cet endroit !!
+					// Mais pas obligatoire !
 					MyFile.delete();
 					ta.setText("");
 				}
