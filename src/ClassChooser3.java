@@ -196,7 +196,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 
 			public void mouseEntered(MouseEvent e) {
 				majTmp();
-				if (fichierTmp != null && currentFileBeingEdited != null
+				if (fichierTmp != null
 						&& isWellFormed.renvoie_bool(fichierTmp) == true) {
 					AjoutArbre(fichierTmp);
 				}
@@ -217,7 +217,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 
 			public void keyReleased(KeyEvent e) {
 				majTmp();
-				if (fichierTmp != null && currentFileBeingEdited != null
+				if (fichierTmp != null
 						&& isWellFormed.renvoie_bool(fichierTmp) == true) {
 					AjoutArbre(fichierTmp);
 				}
@@ -229,106 +229,99 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		});
 	}
 
-	public int ScanBaliseChange()
-	{
-		int nombreBaliseFermante = 0,i = 0,nombreBaliseOuvrante = 0;
+	public int ScanBaliseChange() {
+		int nombreBaliseFermante = 0, i = 0, nombreBaliseOuvrante = 0;
 		boolean baliseFermante = false, baliseOuvranteFermante = false;
 		int currentCaretPosition = ta.getCaretPosition();
 		String text = ta.getText();
 		char caractereCurseur = text.charAt(currentCaretPosition - i - 1);
-		
-		while(nombreBaliseFermante >= nombreBaliseOuvrante && i<text.length())
-		{
+
+		while (nombreBaliseFermante >= nombreBaliseOuvrante
+				&& i < text.length()) {
 			baliseFermante = false;
 			baliseOuvranteFermante = false;
-			
-			if(caractereCurseur != '>')
-			{
-				while(caractereCurseur != '>' && i < text.length())
-				{
-					caractereCurseur = text.charAt(currentCaretPosition - i - 1);
+
+			if (caractereCurseur != '>') {
+				while (caractereCurseur != '>' && i < text.length()) {
+					caractereCurseur = text
+							.charAt(currentCaretPosition - i - 1);
 					i++;
 				}
 			}
-			if(i+1 < text.length())
-			{
+			if (i + 1 < text.length()) {
 				i++;
 				caractereCurseur = text.charAt(currentCaretPosition - i);
-				if(caractereCurseur == '/')
-				{
+				if (caractereCurseur == '/') {
 					i++;
 					baliseOuvranteFermante = true;
 				}
 			}
-			while(i<text.length() && caractereCurseur != '<' )
-			{
+			while (i < text.length() && caractereCurseur != '<') {
 				caractereCurseur = text.charAt(currentCaretPosition - i - 1);
-				if(caractereCurseur == '/' && i+1 < text.length())
-				{
-					if(text.charAt(currentCaretPosition - i - 2) == '<')
+				if (caractereCurseur == '/' && i + 1 < text.length()) {
+					if (text.charAt(currentCaretPosition - i - 2) == '<')
 						baliseFermante = true;
 				}
-				
+
 				i++;
 			}
-			if(i > 1)
-			{
+			if (i > 1) {
 				System.out.println(text.charAt(currentCaretPosition - i + 1));
-				if(text.charAt(currentCaretPosition - i + 1) == '?')
+				if (text.charAt(currentCaretPosition - i + 1) == '?')
 					baliseOuvranteFermante = true;
 			}
-			if(baliseFermante == true)
+			if (baliseFermante == true)
 				nombreBaliseFermante++;
-			else if(baliseOuvranteFermante != true)
+			else if (baliseOuvranteFermante != true)
 				nombreBaliseOuvrante++;
 		}
-		if(nombreBaliseFermante >= nombreBaliseOuvrante)
+		if (nombreBaliseFermante >= nombreBaliseOuvrante)
 			return -1;
-		
+
 		return i;
 	}
+
 	public void ProposeFermetureBalise(char c) {
-		
+
 		int i = 0;
-		
-		
-		if(c == '<' && ta.getCaretPosition() != 1)
-		{
-			String balise ="";
+
+		if (c == '<' && ta.getCaretPosition() != 1) {
+			String balise = "";
 			String text = ta.getText();
 			int positionBalise = text.length() - ScanBaliseChange();
-			
-			if(positionBalise >= text.length())
+
+			if (positionBalise >= text.length())
 				return;
-			
-			while(text.charAt(positionBalise + i) != '>' && text.charAt(positionBalise + i) != ' ')
-			{
-				if(text.charAt(positionBalise + i) != '<'&& text.charAt(positionBalise + i) != '>' && text.charAt(positionBalise + i) != ' ')
+
+			while (text.charAt(positionBalise + i) != '>'
+					&& text.charAt(positionBalise + i) != ' ') {
+				if (text.charAt(positionBalise + i) != '<'
+						&& text.charAt(positionBalise + i) != '>'
+						&& text.charAt(positionBalise + i) != ' ')
 					balise = balise + text.charAt(positionBalise + i);
-				
+
 				i++;
 			}
-			if(balise != "")
-			{
+			if (balise != "") {
 				ta.insert('/' + balise + '>', ta.getCaretPosition());
-				ta.select(ta.getCaretPosition() - balise.length() - 2, ta.getCaretPosition() );
+				ta.select(ta.getCaretPosition() - balise.length() - 2,
+						ta.getCaretPosition());
 			}
-			
-			
 		}
-
-		// ta.insert(String str, int pos);
-		// Inserts the specified text at the specified position in this text
-		// area.
 	}
 
 	// création et màj du fichier tmp :
 	public void majTmp() {
 		// création fichier tmp :
-		fichierTmp = currentFileBeingEdited;
-		fichierTmp = (fichierTmp != null) ? fichierTmp.substring(0,
-				fichierTmp.indexOf('.')) : "";
-		fichierTmp = fichierTmp + "_tmp.xml";
+		if (currentFileBeingEdited != null) {
+			fichierTmp = currentFileBeingEdited;
+			fichierTmp = (fichierTmp != null) ? fichierTmp.substring(0,
+					fichierTmp.indexOf('.')) : "";
+			fichierTmp = fichierTmp + "_tmp.xml";
+		} else {
+			File file = new File("");
+			fichierTmp = file.getAbsolutePath() + "\\tmp.xml";
+		}
 
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(
@@ -411,6 +404,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 
 			int retVal = fc.showOpenDialog(ClassChooser3.this);
 			if (retVal == fc.APPROVE_OPTION) {
+				ta.setText("");
 				file = fc.getSelectedFile();
 				currentFileBeingEdited = file.getAbsolutePath();
 				try {
