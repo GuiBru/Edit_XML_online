@@ -232,23 +232,34 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 	public int ScanBaliseChange()
 	{
 		int nombreBaliseFermante = 0,i = 0,nombreBaliseOuvrante = 0;
-		boolean baliseFermante = false;
+		boolean baliseFermante = false, baliseOuvranteFermante = false;
 		int currentCaretPosition = ta.getCaretPosition();
 		String text = ta.getText();
 		char caractereCurseur = text.charAt(currentCaretPosition - i - 1);
 		
-		
 		while(nombreBaliseFermante >= nombreBaliseOuvrante && i<text.length())
 		{
 			baliseFermante = false;
+			baliseOuvranteFermante = false;
+			
+			if(caractereCurseur != '>')
+			{
+				while(caractereCurseur != '>' && i < text.length())
+				{
+					caractereCurseur = text.charAt(currentCaretPosition - i - 1);
+					i++;
+				}
+			}
 			if(i+1 < text.length())
 			{
 				i++;
-				caractereCurseur = text.charAt(currentCaretPosition - i - 1);
+				caractereCurseur = text.charAt(currentCaretPosition - i);
 				if(caractereCurseur == '/')
+				{
 					i++;
+					baliseOuvranteFermante = true;
+				}
 			}
-			
 			while(i<text.length() && caractereCurseur != '<' )
 			{
 				caractereCurseur = text.charAt(currentCaretPosition - i - 1);
@@ -260,32 +271,39 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 				
 				i++;
 			}
+			if(i > 1)
+			{
+				System.out.println(text.charAt(currentCaretPosition - i + 1));
+				if(text.charAt(currentCaretPosition - i + 1) == '?')
+					baliseOuvranteFermante = true;
+			}
 			if(baliseFermante == true)
 				nombreBaliseFermante++;
-			else
+			else if(baliseOuvranteFermante != true)
 				nombreBaliseOuvrante++;
 		}
-		i++;
+		if(nombreBaliseFermante >= nombreBaliseOuvrante)
+			return -1;
 		
 		return i;
 	}
 	public void ProposeFermetureBalise(char c) {
 		
-		int i = 0,finBoucle = 0;
+		int i = 0;
 		
 		
 		if(c == '<' && ta.getCaretPosition() != 1)
 		{
 			String balise ="";
 			String text = ta.getText();
-			int positionBalise = text.length() - ScanBaliseChange() + 1;
+			int positionBalise = text.length() - ScanBaliseChange();
 			
-			if(positionBalise < 0 || text.charAt(positionBalise) != '<')
+			if(positionBalise >= text.length())
 				return;
 			
-			while(text.charAt(positionBalise + i) != '>')
+			while(text.charAt(positionBalise + i) != '>' && text.charAt(positionBalise + i) != ' ')
 			{
-				if(text.charAt(positionBalise + i) != '<'&& text.charAt(positionBalise + i) != '>')
+				if(text.charAt(positionBalise + i) != '<'&& text.charAt(positionBalise + i) != '>' && text.charAt(positionBalise + i) != ' ')
 					balise = balise + text.charAt(positionBalise + i);
 				
 				i++;
