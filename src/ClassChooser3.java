@@ -232,61 +232,64 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			}
 		});
 	}
-	public void IndenteBalise(char c)
+	public void IndenteBalise(char c,int Position)
 	{
 		int i = 1;
 		int currentCaretPosition = ta.getCaretPosition();
 		String text = ta.getText();
 		boolean baliseFermante = false;
 		
-		if(currentCaretPosition - i - 1 <= 0)
+		
+		if(i + 1 > Position)
 			return;
 		
-		while(text.charAt(currentCaretPosition - i - 1) != '	' && i + 1 < text.length())
+		while(text.charAt(Position - i - 1) != '	' && i + 1 < Position)
 		{			
-			if(i + 1 < text.length())
+			if(i + 1 < Position)
 			{
-				if(text.charAt(currentCaretPosition - i - 1) == '>' && text.charAt(currentCaretPosition - i - 2) == '/')
+				if(text.charAt(Position - i - 1) == '>' && text.charAt(Position - i - 2) == '/')
 					return;
 			}
-			if(i + 2 < text.length())
+			if(i + 2 < Position)
 			{
-				if(text.charAt(currentCaretPosition - i - 1) == '/' && text.charAt(currentCaretPosition - i - 2) == '<')
+				if(text.charAt(Position - i - 1) == '/' && text.charAt(Position - i - 2) == '<')
 				{
-					if(text.charAt(currentCaretPosition - i - 3) == '	')
+					if(text.charAt(Position - i - 3) == '	')
 						baliseFermante = true;	
 				}
-				if(text.charAt(currentCaretPosition - i - 1) == '?' && text.charAt(currentCaretPosition - i - 2) == '<')
+				if(text.charAt(Position - i - 1) == '?' && text.charAt(Position - i - 2) == '<')
 					return;
 			}
 			i++;
 		}
 		if(baliseFermante == true)
-			ta.replaceRange(null, text.length() - i - 1, text.length() - i );
+			ta.replaceRange(null, Position - i - 1, Position - i );
 		
 	}
 	public void IndenteTexte(char c)
 	{
 		if(c == '\n')
 		{
-			IndenteBalise(c);
-			
-			int nombreBaliseFermante = 0, i = 0, nombreBaliseOuvrante = 0;
 			int currentCaretPosition = ta.getCaretPosition();
+			int nombreBaliseFermante = 0, i = 0, nombreBaliseOuvrante = 0;
+			IndenteBalise(c,currentCaretPosition);
+			
 			boolean baliseFermante, baliseOuvranteFermante,balise;
 			String text = ta.getText();
 			char caractereCurseur = text.charAt(currentCaretPosition - i - 1);
 			
-			while(i < text.length())
+			while(i < currentCaretPosition)
 			{
 				balise = false;
 				baliseFermante = false;
 				baliseOuvranteFermante = false;
 				if (caractereCurseur != '>')
 				{
-					while (caractereCurseur != '>' && i < text.length())
+					while (caractereCurseur != '>' && i < currentCaretPosition)
 					{
-						caractereCurseur = text	.charAt(currentCaretPosition - i - 1);
+						if(currentCaretPosition - i - 1 > 0)
+							caractereCurseur = text.charAt(currentCaretPosition - i - 1);
+						
 						i++;
 					}
 				}
@@ -305,15 +308,15 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 							baliseOuvranteFermante = true;
 						}
 					}
-					while(i<text.length() && caractereCurseur != '<' )
+					while(i<currentCaretPosition && caractereCurseur != '<' )
 					{
 						caractereCurseur = text.charAt(currentCaretPosition - i - 1);
-						if(caractereCurseur == '/' && i+1 < text.length())
+						if(caractereCurseur == '/' && i+1 < currentCaretPosition)
 						{
 							if(text.charAt(currentCaretPosition - i - 2) == '<')
 								baliseFermante = true;
 						}
-						if(caractereCurseur == '?' && i+1 < text.length())
+						if(caractereCurseur == '?' && i+1 < currentCaretPosition)
 						{
 							if(text.charAt(currentCaretPosition - i - 2) == '<')
 								baliseOuvranteFermante = true;
@@ -337,6 +340,8 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			}
 			for(i=0;i<nombreBaliseOuvrante - nombreBaliseFermante;i++)
 				ta.insert("	", ta.getCaretPosition());
+			
+			IndenteBalise(c,text.length());
 		}
 	}
 	
@@ -350,20 +355,20 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		String text = ta.getText();
 		char caractereCurseur = text.charAt(currentCaretPosition - i - 1);
 		
-		while(nombreBaliseFermante >= nombreBaliseOuvrante && i<text.length())
+		while(nombreBaliseFermante >= nombreBaliseOuvrante && i<currentCaretPosition)
 		{
 			baliseFermante = false;
 			baliseOuvranteFermante = false;
 			
 			if(caractereCurseur != '>')
 			{
-				while(caractereCurseur != '>' && i < text.length())
+				while(caractereCurseur != '>' && i < currentCaretPosition)
 				{
 					caractereCurseur = text.charAt(currentCaretPosition - i - 1);
 					i++;
 				}
 			}
-			if(i >= text.length() && caractereCurseur != '>')
+			if(i >= currentCaretPosition && caractereCurseur != '>')
 				return -1;
 						
 			if(i+1 < text.length())
@@ -376,7 +381,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 					baliseOuvranteFermante = true;
 				}
 			}
-			while(i<text.length() && caractereCurseur != '<' )
+			while(i<currentCaretPosition && caractereCurseur != '<' )
 			{
 				caractereCurseur = text.charAt(currentCaretPosition - i - 1);
 				if(caractereCurseur == '/' && i+1 < text.length())
@@ -408,7 +413,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		String text = ta.getText();
 		int currentCaretPosition = ta.getCaretPosition();
 		
-		while(currentCaretPosition - i > 0 && text.charAt(currentCaretPosition - i - 1) != '<' && i<text.length())
+		while(currentCaretPosition - i > 0 && text.charAt(currentCaretPosition - i - 1) != '<' && i < currentCaretPosition)
 		{
 			i++;
 			if(text.charAt(currentCaretPosition - i - 1) == '/' || text.charAt(currentCaretPosition - i - 1) == '?')
@@ -424,6 +429,9 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		
 		int i = 0;
 		int positionBalise = 0;
+		int currentCaretPosition = ta.getCaretPosition();
+		Highlighter hl = ta.getHighlighter();
+		hl.removeAllHighlights();
 		String text = ta.getText();
 		String balise ="";
 		
@@ -435,10 +443,10 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		if(c == '>' || c == '<' &&ta.getCaretPosition() != 1 )
 		{
 			
-			if(positionBalise >= text.length())
+			if(positionBalise >= currentCaretPosition)
 				return;
 			
-			while(text.charAt(positionBalise + i) != '>' && text.charAt(positionBalise + i) != ' ' && positionBalise + i < text.length())
+			while(text.charAt(positionBalise + i) != '>' && text.charAt(positionBalise + i) != ' ' && positionBalise + i < currentCaretPosition)
 			{
 				if(text.charAt(positionBalise + i) != '<'&& text.charAt(positionBalise + i) != '>' && text.charAt(positionBalise + i) != ' ')
 					balise = balise + text.charAt(positionBalise + i);
@@ -449,12 +457,29 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			if(balise != "" && c == '<')
 			{
 				ta.insert('/' + balise + '>', ta.getCaretPosition());
-				ta.select(ta.getCaretPosition() - balise.length() - 2, ta.getCaretPosition() );
+				try 
+				{
+					hl.addHighlight(
+							ta.getCaretPosition() - balise.length() - 2,
+							ta.getCaretPosition(),
+							DefaultHighlighter.DefaultPainter);
+				} catch (BadLocationException ex) {
+					ex.printStackTrace();
+				}
 			}
 			else if(balise != "" && c == '>')
 			{
 				ta.insert("</" + balise + '>', ta.getCaretPosition());
-				ta.select(ta.getCaretPosition() - balise.length() - 3, ta.getCaretPosition() );
+				try 
+				{
+					hl.addHighlight(
+							ta.getCaretPosition() - balise.length() - 3,
+							ta.getCaretPosition(),
+							DefaultHighlighter.DefaultPainter);
+				} catch (BadLocationException ex)
+				{
+					ex.printStackTrace();
+				}
 			}
 		}
 		
@@ -463,6 +488,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		// Inserts the specified text at the specified position in this text
 		// area.
 	}
+
 
 	// création et màj du fichier tmp :
 	public void majTmp() {
