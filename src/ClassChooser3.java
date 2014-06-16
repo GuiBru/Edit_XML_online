@@ -71,7 +71,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		actionsDroite();
 
 		this.setContentPane(content);
-		this.setTitle("Editeur XML Bêta");
+		this.setTitle("Editeur XML BÃªta");
 		this.setVisible(true);
 		this.setSize(1200, 600);
 		ta.setBounds(100, 100, 612, 474);
@@ -79,7 +79,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		GestionFenetre();
 	}
 
-	// a finir (à peine commencé)
+	// a finir (Ã  peine commencÃ©)
 	public void IntendationAuto() {
 		String text = ta.getText();
 		char carEnCours = text.charAt(1);
@@ -126,7 +126,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		// IntendationAuto();
 	}
 
-	// Actions à effectuer lors de modification de la fenêtre
+	// Actions Ã  effectuer lors de modification de la fenÃªtre
 	public void GestionFenetre() {
 
 		this.addWindowListener(new WindowListener() {
@@ -188,7 +188,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		}
 	}
 
-	// Actions sur l'écran de droite qui influent sur tmp et écran de gauche :
+	// Actions sur l'Ã©cran de droite qui influent sur tmp et Ã©cran de gauche :
 	public void actionsDroite() {
 		ta.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
@@ -342,9 +342,9 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		}
 	}
 
-	// création et màj du fichier tmp :
+	// crÃ©ation et mÃ j du fichier tmp :
 	public void majTmp() {
-		// création fichier tmp :
+		// crÃ©ation fichier tmp :
 		if (currentFileBeingEdited != null) {
 			fichierTmp = currentFileBeingEdited;
 			fichierTmp = (fichierTmp != null) ? fichierTmp.substring(0,
@@ -364,7 +364,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 			e10.printStackTrace();
 		}
 
-		// écriture (màj) dans le fichier tmp :
+		// Ã©criture (mÃ j) dans le fichier tmp :
 		PrintWriter pw = null;
 		try {
 			pw = new PrintWriter(new File(fichierTmp));
@@ -390,10 +390,10 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		item = new JMenuItem("Save"); // en cours
 		item.addActionListener(this);
 		fileMenu.add(item);
-		item = new JMenuItem("Rename"); // pas encore traité
+		item = new JMenuItem("Rename"); // pas encore traitÃ©
 		item.addActionListener(this);
 		fileMenu.add(item);
-		item = new JMenuItem("Delete"); // ne marche pas : buffers à fermer...
+		item = new JMenuItem("Delete"); // ne marche pas : buffers Ã  fermer...
 										// a l'air de marcher maintenant ?!
 		item.addActionListener(this);
 		fileMenu.add(item);
@@ -407,7 +407,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 	public void createArbreMenu() {
 		JMenuItem item;
 		arbreMenu = new JMenu("Arbre");
-		item = new JMenuItem("Créer");
+		item = new JMenuItem("CrÃ©er");
 		item.addActionListener(this);
 		arbreMenu.add(item);
 		item = new JMenuItem("Effacer");
@@ -419,7 +419,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 		item = new JMenuItem("Copier");
 		item.addActionListener(this);
 		arbreMenu.add(item);
-		item = new JMenuItem("Déplacer");
+		item = new JMenuItem("DÃ©placer");
 		item.addActionListener(this);
 		arbreMenu.add(item);
 	}
@@ -473,7 +473,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 	private void Sauvegarder(String currentFileBeingEdited) {
 		PrintWriter pw = null;
 		System.out.println("Fichier : " + currentFileBeingEdited
-				+ " sauvegardé.");
+				+ " sauvegardÃ©.");
 		try {
 			pw = new PrintWriter(new File(currentFileBeingEdited));
 			pw.println(ta.getText());
@@ -500,7 +500,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 
 		if (choix == fc.APPROVE_OPTION) {
 			String s = (String) JOptionPane.showInputDialog(null,
-					"Chemin selectionné : " + currentFileBeingEdited + "\n"
+					"Chemin selectionnÃ© : " + currentFileBeingEdited + "\n"
 							+ "Nom du fichier: ", "Choix du nom de fichier",
 					JOptionPane.PLAIN_MESSAGE, null, null, "Nouveau_fichier");
 
@@ -517,7 +517,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 					e10.printStackTrace();
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, "Fichier non créé !");
+				JOptionPane.showMessageDialog(null, "Fichier non crÃ©Ã© !");
 			}
 			Sauvegarder(currentFileBeingEdited);
 		}
@@ -540,7 +540,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 								null,
 								"Aucun fichier n'est ouvert actuellement...\nFaire \"Sauvegarder a\" pour enregistrer le nouveau fichier.");
 			}
-		} else if ("Save to".equalsIgnoreCase(menuName)) { // Créer nouveau
+		} else if ("Save to".equalsIgnoreCase(menuName)) { // CrÃ©er nouveau
 															// fichier
 			creerFichier();
 		} else if ("Delete".equalsIgnoreCase(menuName)) { // Supprimer fichier
@@ -557,7 +557,7 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 					File MyFile = new File(currentFileBeingEdited);
 					System.out.println("suppression de "
 							+ currentFileBeingEdited);
-					// erreur à cet endroit !!
+					// erreur Ã  cet endroit !!
 					// Mais pas obligatoire !
 					MyFile.delete();
 					ta.setText("");
@@ -566,7 +566,8 @@ public class ClassChooser3 extends JFrame implements ActionListener {
 				JOptionPane.showMessageDialog(null,
 						"Aucun fichier ouvert actuellement.");
 			}
-		} // reste rennomage à faire : copie + création + suppression
+		} // reste rennomage Ã  faire : copie + crÃ©ation + suppression
 			// (optionnel)
 	}
 }
+
