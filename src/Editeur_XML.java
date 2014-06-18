@@ -1,3 +1,4 @@
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -84,6 +85,9 @@ public class Editeur_XML extends JFrame implements ActionListener {
 	static String balise = "";
 	static String balise2 = "";
 	int currentCaretPosition;
+	int debPositionHighlight = 0;
+	int finPositionHighlight = 0;
+	boolean presenceHighlight = false;
 	File file;
 	String line;
 	BufferedReader br;
@@ -891,7 +895,8 @@ public class Editeur_XML extends JFrame implements ActionListener {
 			i++;
 			if (text.charAt(currentCaretPosition - i - 1) == '/'
 					|| text.charAt(currentCaretPosition - i - 1) == '?'
-					|| text.charAt(currentCaretPosition - i - 1) == '>')
+					|| text.charAt(currentCaretPosition - i - 1) == '>'
+					|| text.charAt(currentCaretPosition - i - 1) == '\n')
 				return -1;
 		}
 		if (currentCaretPosition - i - 1 <= 0
@@ -910,11 +915,24 @@ public class Editeur_XML extends JFrame implements ActionListener {
 		String text = ta.getText();
 		String balise = "";
 
+		if(presenceHighlight && c != '\n')
+		{
+			if(debPositionHighlight >= 0 && debPositionHighlight <= text.length())
+			{
+				if(finPositionHighlight >= 0 && finPositionHighlight > debPositionHighlight)
+				{
+					if(finPositionHighlight <= text.length())
+						ta.replaceRange(null, debPositionHighlight,finPositionHighlight);
+				}
+			}
+		}
+		
 		if (c == '<' && ta.getCaretPosition() != 1)
 			positionBalise = currentCaretPosition - ScanBaliseChange();
 		else if (c == '>' && ta.getCaretPosition() != 1)
 			positionBalise = currentCaretPosition - FermetureDirecte();
 
+		presenceHighlight = false;
 		if (c == '>' || c == '<' && ta.getCaretPosition() != 1) {
 
 			if (positionBalise >= currentCaretPosition)
@@ -933,6 +951,9 @@ public class Editeur_XML extends JFrame implements ActionListener {
 			if (balise != "" && c == '<') {
 				ta.insert('/' + balise + '>', ta.getCaretPosition());
 				try {
+					debPositionHighlight = ta.getCaretPosition() - balise.length() - 2;
+					finPositionHighlight = ta.getCaretPosition();
+					presenceHighlight = true;
 					hl.addHighlight(
 							ta.getCaretPosition() - balise.length() - 2,
 							ta.getCaretPosition(),
@@ -943,6 +964,9 @@ public class Editeur_XML extends JFrame implements ActionListener {
 			} else if (balise != "" && c == '>') {
 				ta.insert("</" + balise + '>', ta.getCaretPosition());
 				try {
+					debPositionHighlight = ta.getCaretPosition() - balise.length() - 3;
+					finPositionHighlight = ta.getCaretPosition();
+					presenceHighlight = true;
 					hl.addHighlight(
 							ta.getCaretPosition() - balise.length() - 3,
 							ta.getCaretPosition(),
